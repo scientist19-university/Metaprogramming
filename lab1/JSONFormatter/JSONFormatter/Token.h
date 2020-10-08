@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace JSON {
 
@@ -35,5 +36,25 @@ namespace JSON {
   static const char RIGHT_BRACE = '}';
   static const char LEFT_BRACKET = '[';
   static const char RIGHT_BRACKET = ']';
+  static const char QUOTE = '"';
+
+  static const std::set<char> SPECIAL_CHARS = {
+    SPACE, 
+    TAB, 
+    NEW_LINE, 
+    COLON, 
+    COMMA, 
+    LEFT_BRACE, 
+    RIGHT_BRACE, 
+    LEFT_BRACKET, 
+    RIGHT_BRACKET, 
+    QUOTE
+  };
+
+  static const std::string TRUE = "true";
+  static const std::string FALSE = "false";
+  static const std::string NULL_ = "null";
+
+  static const Token EMPTY_TOKEN = Token("");
 }
 

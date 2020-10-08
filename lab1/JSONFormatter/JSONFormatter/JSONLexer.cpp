@@ -41,4 +41,86 @@ Tokens JSONLexer::Lex(std::string& i_str){
 
     // log error 'Unexpected character'
   }
+
+  return tokens;
+}
+
+Token JSONLexer::LexNumber(std::string & i_str){
+  std::string number;
+
+  int k = 0;
+  while (k < i_str.size() && '0' <= i_str[k] && i_str[k] <= '9') {
+    number += i_str[k];
+    k++;
+  }
+  i_str.erase(i_str.begin(), i_str.begin() + k);
+
+  return Token(number);
+}
+
+Token JSONLexer::LexJsonString(std::string & i_str){
+  std::string json_string;
+
+  if (i_str[0] != QUOTE)
+    return EMPTY_TOKEN;
+
+  json_string += QUOTE;
+
+  int k = 1;
+  while (k < i_str.size() && i_str[k] != QUOTE) {
+    json_string += i_str[k];
+    k++;
+  }
+
+  if (i_str[k] == QUOTE) {
+    json_string += i_str[k];
+
+    return Token(json_string);
+  }
+
+  i_str.erase(i_str.begin(), i_str.begin() + k);
+
+  // log error "No closing brace found
+
+  return EMPTY_TOKEN;
+}
+
+Token JSONLexer::LexBool(std::string & i_str){
+
+  auto true_string = i_str.substr(0, TRUE.size());
+  if (true_string == TRUE) {
+    i_str.erase(0, TRUE.size());
+    return Token(true_string);
+  }
+
+  auto false_string = i_str.substr(0, FALSE.size());
+  if (false_string == FALSE) {
+    i_str.erase(0, FALSE.size());
+    return Token(false_string);
+  }
+
+  return EMPTY_TOKEN;
+}
+
+Token JSONLexer::LexNull(std::string & i_str){
+
+  auto null_string = i_str.substr(0, NULL_.size());
+  if (null_string == NULL_) {
+    i_str.erase(0, NULL_.size());
+    return Token(null_string);
+  }
+
+  return EMPTY_TOKEN;
+}
+
+Token JSONLexer::LexSpecialChar(std::string& i_str){
+  
+  char c = i_str[0];
+  if (SPECIAL_CHARS.find(c) != SPECIAL_CHARS.end()) {
+    auto special_char = i_str.substr(0, 1);
+    i_str.erase(i_str.begin());
+    return Token(special_char);
+  }
+
+  return EMPTY_TOKEN;
 }
