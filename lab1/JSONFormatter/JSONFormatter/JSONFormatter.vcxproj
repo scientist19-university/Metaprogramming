@@ -151,10 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="JSONLexer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Token.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JSONFormatter.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="JSONLexer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
