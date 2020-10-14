@@ -1,7 +1,10 @@
 ﻿#include "pch.h"
-#include <iostream>
+
+#include "Controller.h"
 
 int main(){
-    std::cout << "Hello World!\n"; 
+
+  Controller controller;
+  controller.Start();
 }
 
