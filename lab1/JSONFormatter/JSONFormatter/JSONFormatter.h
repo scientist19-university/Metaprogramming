@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Token.h"
+#include "ConfigParser.h"
 
 using namespace JSON;
 
@@ -11,7 +12,7 @@ public:
   ~JSONFormatter() = default;
 
   static void Verify(Tokens& i_tokens);
-  static Tokens Format(Tokens& i_tokens);
+  static Tokens Format(Tokens& i_tokens, ConfigInfo& i_config_info);
 
 private:
   /*

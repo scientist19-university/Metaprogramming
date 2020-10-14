@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigParser.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="JSONFormatter.h" />
     <ClInclude Include="JSONLexer.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Token.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigParser.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="JSONFormatter.cpp" />
     <ClCompile Include="main.cpp" />

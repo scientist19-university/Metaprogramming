@@ -3,6 +3,7 @@
 
 #include "JSONLexer.h"
 #include "JSONFormatter.h"
+#include "ConfigParser.h"
 
 #include <iostream>
 #include <fstream>
@@ -84,10 +85,13 @@ void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
   if (i_args.size() != 4)
     std::cout << "Wrongs arguments for the format command. See help for the list of all available arguments." << std::endl;
 
+  std::string config = _GetFileContent(i_args[1]);
+  ConfigInfo config_info = ConfigParser::Parse(config);
+
   std::string text = _GetFileContent(i_args[3]);
   
   auto tokens = JSONLexer::Lex(text);
-  auto formatted_tokens = JSONFormatter::Format(tokens);
+  auto formatted_tokens = JSONFormatter::Format(tokens, config_info);
 
   _PrintToFile(formatted_tokens, i_args[3]);
 }
