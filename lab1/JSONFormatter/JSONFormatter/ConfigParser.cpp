@@ -16,7 +16,7 @@ namespace {
     std::string cur_word;
 
     for (char c : i_line)
-      if (c == ' ') {
+      if (c == ' ' || c == '\n' || c == '\t') {
         if (!cur_word.empty())
           res.push_back(cur_word);
         cur_word = "";
@@ -34,7 +34,7 @@ namespace {
     int k = 0;
     int res = 0;
     while (k < i_string.size() && '0' <= i_string[k] && i_string[k] <= '9') {
-      res += i_string[k] * pow(10, k);
+      res += (i_string[k] - '0') * pow(10, k);
       k++;
     }
 
