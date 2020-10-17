@@ -7,33 +7,41 @@ using namespace JSON;
 Tokens JSONLexer::Lex(std::string& i_str){
   Tokens tokens;
 
+  int cur_line_number = 1;
   while (!i_str.empty()) {
 
     auto number_token = LexNumber(i_str);
+    number_token.m_line_number = cur_line_number;
     if (!number_token.Empty()) {
       tokens.push_back(number_token);
       continue;
     }
 
     auto bool_token = LexBool(i_str);
+    bool_token.m_line_number = cur_line_number;
     if (!bool_token.Empty()) {
       tokens.push_back(bool_token);
       continue;
     }
 
     auto null_token = LexNull(i_str);
+    null_token.m_line_number = cur_line_number;
     if (!null_token.Empty()) {
       tokens.push_back(null_token);
       continue;
     }
 
     auto json_token = LexJsonString(i_str);
+    json_token.m_line_number = cur_line_number;
     if (!json_token.Empty()) {
       tokens.push_back(json_token);
       continue;
     }
 
     auto char_token = LexSpecialChar(i_str);
+    char_token.m_line_number = cur_line_number;
+    if (char_token == NEW_LINE)
+      cur_line_number++;
     if (!char_token.Empty()) {
       tokens.push_back(char_token);
       continue;
@@ -49,7 +57,7 @@ Token JSONLexer::LexNumber(std::string & i_str){
   std::string number;
 
   int k = 0;
-  while (k < i_str.size() && '0' <= i_str[k] && i_str[k] <= '9') {
+  while (k < (int)i_str.size() && '0' <= i_str[k] && i_str[k] <= '9') {
     number += i_str[k];
     k++;
   }
@@ -67,12 +75,12 @@ Token JSONLexer::LexJsonString(std::string & i_str){
   json_string += QUOTE;
 
   int k = 1;
-  while (k < i_str.size() && i_str[k] != QUOTE) {
+  while (k < (int)i_str.size() && i_str[k] != QUOTE) {
     json_string += i_str[k];
     k++;
   }
 
-  if (k < i_str.size()) {
+  if (k < (int)i_str.size()) {
     json_string += i_str[k];
     i_str.erase(0, k+1);
 

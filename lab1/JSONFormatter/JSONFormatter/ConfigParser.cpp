@@ -33,8 +33,8 @@ namespace {
   int ParseNumber(const std::string& i_string) {
     int k = 0;
     int res = 0;
-    while (k < i_string.size() && '0' <= i_string[k] && i_string[k] <= '9') {
-      res += (i_string[k] - '0') * pow(10, k);
+    while (k < (int)i_string.size() && '0' <= i_string[k] && i_string[k] <= '9') {
+      res += (i_string[k] - '0') * (int)pow(10, k);
       k++;
     }
 
@@ -53,7 +53,7 @@ ConfigInfo ConfigParser::Parse(const std::string & i_string){
   ConfigInfo res;
   auto params = _SplitLine(i_string);
 
-  for (int i = 0; i < params.size() - 1; i++) {
+  for (int i = 0; i < int(params.size()) - 1; i++) {
 
     // TODO: add verification for number
     if (params[i] == g_use_tabs_keyword)

@@ -48,33 +48,36 @@ namespace JSON {
       m_str += i_char;
     }
 
-    bool Empty() {
+    bool Empty() const{
       return m_str.empty();
     }
 
-    bool operator==(const Token& i_token) {
+    bool operator==(const Token& i_token) const{
       return m_str == i_token.m_str;
     }
 
-    bool operator==(const char c) {
+    bool operator==(const char c) const{
       return (m_str.size() == 1 && m_str[0] == c);
     }
 
-    bool IsSpecialChar() {
+    bool IsSpecialChar() const{
       if (m_str.size() != 1)
         return false;
       return SPECIAL_CHARS.find(m_str[0]) != SPECIAL_CHARS.end();
     }
 
-    bool IsPrimitive() {
+    bool IsPrimitive() const{
       return !IsSpecialChar();
     }
 
-    bool IsString() {
+    bool IsString() const{
       return m_str[0] == '"';
     }
-  };
 
+    bool IsWhitespace() const{
+      return (*this == SPACE || *this == TAB || *this == NEW_LINE);
+    }
+  };
 
   typedef std::vector<Token> Tokens;
   static const Token EMPTY_TOKEN = Token("");

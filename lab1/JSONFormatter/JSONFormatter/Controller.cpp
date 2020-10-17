@@ -4,6 +4,7 @@
 #include "JSONLexer.h"
 #include "JSONFormatter.h"
 #include "ConfigParser.h"
+#include "Logger.h"
 
 #include <iostream>
 #include <fstream>
@@ -63,7 +64,7 @@ void Controller::PrintHelp(){
 }
 
 void Controller::PrintUnknownCommandMessage(){
-  std::cout << "The command is unknown. See help for the list of all available commands." << std::endl;
+  std::cout << "Unknown command. See help for the list of all available commands." << std::endl;
 }
 
 void Controller::ParseCommand(const std::vector<std::string>& i_args){
@@ -76,6 +77,8 @@ void Controller::ParseCommand(const std::vector<std::string>& i_args){
 
   if (arg0 == "-f" || arg0 == "--format")
     ParseFormatCommand(i_args);
+  else if (arg0 == "-v" || arg0 == "--verify")
+    ParseVerifyCommand(i_args);
   else if (arg0 == "-e" || arg0 == "--exit")
     m_proceed = false;
   else PrintUnknownCommandMessage();
@@ -93,5 +96,22 @@ void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
   auto tokens = JSONLexer::Lex(text);
   auto formatted_tokens = JSONFormatter::Format(tokens, config_info);
 
-  _PrintToFile(formatted_tokens, i_args[3]);
+  if (tokens != formatted_tokens)
+    _PrintToFile(formatted_tokens, i_args[3]);
+}
+
+void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
+  if (i_args.size() != 4)
+    std::cout << "Wrongs arguments for the verify command. See help for the list of all available arguments." << std::endl;
+
+  std::string config = _GetFileContent(i_args[1]);
+  ConfigInfo config_info = ConfigParser::Parse(config);
+
+  std::string text = _GetFileContent(i_args[3]);
+  auto tokens = JSONLexer::Lex(text);
+
+  Logger logger("./errors.log");
+  logger.SetCurFileName(i_args[1].c_str());
+
+  JSONFormatter::Verify(tokens, config_info, logger);
 }

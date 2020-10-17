@@ -155,6 +155,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="JSONFormatter.h" />
     <ClInclude Include="JSONLexer.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClCompile Include="ConfigParser.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="JSONFormatter.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="JSONLexer.cpp" />
     <ClCompile Include="pch.cpp">
