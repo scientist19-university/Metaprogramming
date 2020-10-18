@@ -5,9 +5,10 @@
 // default parameters
 struct ConfigInfo {
   bool m_use_tabs = false;
-  int m_spaces_in_tab = 4;
-  int m_spaces_per_level = 2;
-  int m_tabs_per_level = 1;
+  bool m_space_after_comma = false;
+  bool m_space_after_colon = true;
+  int m_indent_size = 4;
+  int m_max_blank_lines_number = 1;
 };
 
 class ConfigParser{

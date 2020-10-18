@@ -4,9 +4,10 @@
 #include <vector>
 
 const char* g_use_tabs_keyword = "use_tabs";
-const char* g_spaces_in_tab_keyword = "spaces_in_tab";
-const char* g_spaces_per_level_keyword = "spaces_per_level";
-const char* g_tabs_per_level_keyword = "tabs_per_level";
+const char* g_indent_size_keyword = "indent_size";
+const char* g_max_blank_lines_number = "max_blank_lines";
+const char* g_space_after_comma_keyword = "space_after_comma";
+const char* g_space_after_colon_keyword = "space_after_colon";
 
 namespace {
 
@@ -58,12 +59,14 @@ ConfigInfo ConfigParser::Parse(const std::string & i_string){
     // TODO: add verification for number
     if (params[i] == g_use_tabs_keyword)
       res.m_use_tabs = ParseBool(params[i + 1]);
-    else if (params[i] == g_spaces_in_tab_keyword)
-      res.m_spaces_in_tab = ParseNumber(params[i + 1]);
-    else if (params[i] == g_tabs_per_level_keyword)
-      res.m_tabs_per_level = ParseNumber(params[i + 1]);
-    else if (params[i] == g_spaces_per_level_keyword)
-      res.m_spaces_per_level = ParseNumber(params[i + 1]);
+    else if (params[i] == g_indent_size_keyword)
+      res.m_indent_size = ParseNumber(params[i + 1]);
+    else if (params[i] == g_max_blank_lines_number)
+      res.m_max_blank_lines_number = ParseNumber(params[i + 1]);
+    else if (params[i] == g_space_after_comma_keyword)
+      res.m_space_after_comma = ParseBool(params[i + 1]);
+    else if (params[i] == g_space_after_colon_keyword)
+      res.m_space_after_colon = ParseBool(params[i + 1]);
 
   }
 
