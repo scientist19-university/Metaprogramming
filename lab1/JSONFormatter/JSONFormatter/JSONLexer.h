@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Token.h"
-
 #include <vector>
+
+using namespace JSON;
+
 
 class JSONLexer {
 
@@ -10,13 +12,13 @@ public:
   JSONLexer() = default;
   ~JSONLexer() = default;
 
-  static JSON::Tokens Lex(std::string& i_str);
+  static Tokens Lex(std::string& i_str);
 
-  static JSON::Token LexNumber(std::string& i_str);
-  static JSON::Token LexJsonString(std::string& i_str);
-  static JSON::Token LexBool(std::string& i_str);
-  static JSON::Token LexNull(std::string& i_str);
-  static JSON::Token LexSpecialChar(std::string& i_str);
+  static Token LexNumber(std::string& i_str);
+  static Token LexJsonString(std::string& i_str);
+  static Token LexBool(std::string& i_str);
+  static Token LexNull(std::string& i_str);
+  static Token LexSpecialChar(std::string& i_str);
 
 };
 

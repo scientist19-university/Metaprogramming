@@ -1,21 +1,18 @@
 #include "pch.h"
 #include "JSONLexer.h"
 
+namespace {
+  bool _IsCloseQuote(const std::string& i_string, int i_index) {
+    return i_string[i_index] == '"' && i_string[i_index - 1] != '\\';
+  }
+}
 
-using namespace JSON;
 
 Tokens JSONLexer::Lex(std::string& i_str){
   Tokens tokens;
 
   int cur_line_number = 1;
   while (!i_str.empty()) {
-
-    auto number_token = LexNumber(i_str);
-    number_token.m_line_number = cur_line_number;
-    if (!number_token.Empty()) {
-      tokens.push_back(number_token);
-      continue;
-    }
 
     auto bool_token = LexBool(i_str);
     bool_token.m_line_number = cur_line_number;
@@ -47,23 +44,34 @@ Tokens JSONLexer::Lex(std::string& i_str){
       continue;
     }
 
+    auto number_token = LexNumber(i_str);
+    number_token.m_line_number = cur_line_number;
+    if (!number_token.Empty()) {
+      tokens.push_back(number_token);
+      continue;
+    }
+
     // log error 'Unexpected character'
+    i_str.erase(0, 1);
   }
 
   return tokens;
 }
 
 Token JSONLexer::LexNumber(std::string & i_str){
-  std::string number;
 
-  int k = 0;
-  while (k < (int)i_str.size() && '0' <= i_str[k] && i_str[k] <= '9') {
-    number += i_str[k];
-    k++;
+  size_t pos;
+  try {
+    std::stof(i_str, &pos);
   }
-  i_str.erase(0, k);
+  catch (...) {
+    return EMPTY_TOKEN;
+  }
 
-  return Token(number);
+  auto str_number = i_str.substr(0, pos);
+  i_str.erase(0, pos);
+
+  return Token(str_number);
 }
 
 Token JSONLexer::LexJsonString(std::string & i_str){
@@ -75,7 +83,7 @@ Token JSONLexer::LexJsonString(std::string & i_str){
   json_string += QUOTE;
 
   int k = 1;
-  while (k < (int)i_str.size() && i_str[k] != QUOTE) {
+  while (k < (int)i_str.size() && !_IsCloseQuote(i_str, k)) {
     json_string += i_str[k];
     k++;
   }
@@ -89,7 +97,7 @@ Token JSONLexer::LexJsonString(std::string & i_str){
 
   i_str.erase(i_str.begin(), i_str.end());
 
-  // log error "No closing brace found
+  // log error "No closing quote found"
 
   return EMPTY_TOKEN;
 }
