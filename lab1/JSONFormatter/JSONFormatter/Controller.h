@@ -8,16 +8,13 @@ public:
   Controller() = default;
   ~Controller() = default;
 
-  void Start();
+  static void HandleCommand(const std::vector<std::string>& i_args);
 
 private:
-  void PrintHelp();
-  void PrintUnknownCommandMessage();
+  static void PrintHelp();
+  static void PrintUnknownCommandMessage(const std::string& i_command);
 
-  void ParseCommand(const std::vector<std::string>& i_args);
-  void ParseFormatCommand(const std::vector<std::string>& i_args);
-  void ParseVerifyCommand(const std::vector<std::string>& i_args);
-
-  bool m_proceed = true;
+  static void HandleFormatCommand(const std::vector<std::string>& i_args);
+  static void HandleVerifyCommand(const std::vector<std::string>& i_args);
 };
 

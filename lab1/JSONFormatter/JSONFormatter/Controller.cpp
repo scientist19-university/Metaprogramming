@@ -16,25 +16,6 @@ namespace fs = std::filesystem;
 
 namespace {
 
-  std::vector<std::string> _SplitLine(const std::string& i_line) {
-    std::vector<std::string> res;
-    std::string cur_word;
-
-    for (char c : i_line)
-      if (c == ' ') {
-        if (!cur_word.empty())
-          res.push_back(cur_word);
-        cur_word = "";
-      }
-      else
-        cur_word += c;
-
-    if (!cur_word.empty())
-      res.push_back(cur_word);
-
-    return res;
-  }
-
   std::string _GetFileContent(const std::string& i_path) {
     std::ifstream fin(i_path);
     std::string content((std::istreambuf_iterator<char>(fin)),
@@ -57,7 +38,7 @@ namespace {
       fs::directory_entry(i_file_path).exists();
     }
     catch (...) {
-      i_logger.PrintError("File \"" + i_file_path.string() + "\" does not exist.");
+      std::cout << "File \"" + i_file_path.string() + "\" does not exist." << std::endl;
       return;
     }
 
@@ -77,7 +58,7 @@ namespace {
       fs::directory_entry(i_directory).exists();
     }
     catch (...) {
-      i_logger.PrintError("Directory \"" + i_directory.string() + "\" does not exist.");
+      std::cout << "Directory \"" + i_directory.string() + "\" does not exist." << std::endl;
       return;
     }
 
@@ -97,7 +78,7 @@ namespace {
       fs::directory_entry(i_file_path).exists();
     }
     catch (...) {
-      i_logger.PrintError("File \"" + i_file_path.string() + "\" does not exist.");
+      std::cout << "File \"" + i_file_path.string() + "\" does not exist." << std::endl;
       return;
     }
 
@@ -116,7 +97,7 @@ namespace {
       fs::directory_entry(i_directory).exists();
     }
     catch (...) {
-      i_logger.PrintError("Directory \"" + i_directory.string() + "\" does not exist.");
+      std::cout << "Directory \"" + i_directory.string() + "\" does not exist." << std::endl;
       return;
     }
 
@@ -129,51 +110,61 @@ namespace {
     }
 
   }
-}
 
-void Controller::Start(){
-  while (m_proceed) {
-    std::string input;
-    std::getline(std::cin, input);
+  ConfigInfo _GetConfigFromFile(const fs::path& i_config_path) {
+    try {
+      fs::directory_entry(i_config_path).exists();
+    }
+    catch (...) {
+      std::cout << "Config file \"" + i_config_path.string() + "\" does not exist." << std::endl;
+      return ConfigInfo();
+    }
 
-    auto args = _SplitLine(input);
+    std::string config = _GetFileContent(i_config_path.string());
+    ConfigInfo config_info = ConfigParser::Parse(config);
 
-    ParseCommand(args);
+    return config_info;
   }
 }
 
+
 void Controller::PrintHelp(){
-
+  std::cout << "Available commands:\n\n"
+            << "--format <path to config> -(f | d | p) <path to file to format>\n"
+            << "-f <path to config> -(f | d | p) <path to file to format>\n\n"
+            << "--verify <path to config> -(f | d | p) <path to file to verify>\n"
+            << "-v <path to config> -(f | d | p) <path to file to verify>\n\n"
+            << "--help\n"
+            << "-h\n\n";
 }
 
-void Controller::PrintUnknownCommandMessage(){
-  std::cout << "Unknown command. See help for the list of all available commands." << std::endl;
+void Controller::PrintUnknownCommandMessage(const std::string& i_command){
+  std::cout << "Unknown command " << i_command << ". See help for the list of all available commands." << std::endl;
 }
 
-void Controller::ParseCommand(const std::vector<std::string>& i_args){
+void Controller::HandleCommand(const std::vector<std::string>& i_args){
 
   if (i_args.empty()) {
-    PrintUnknownCommandMessage();
+    PrintUnknownCommandMessage("");
     return;
   }
 
   auto arg0 = i_args[0];
 
   if (arg0 == "-f" || arg0 == "--format")
-    ParseFormatCommand(i_args);
+    HandleFormatCommand(i_args);
   else if (arg0 == "-v" || arg0 == "--verify")
-    ParseVerifyCommand(i_args);
-  else if (arg0 == "-e" || arg0 == "--exit")
-    m_proceed = false;
-  else PrintUnknownCommandMessage();
+    HandleVerifyCommand(i_args);
+  else if (arg0 == "-h" || arg0 == "--help")
+    PrintHelp();
+  else PrintUnknownCommandMessage(arg0);
 }
 
-void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
+void Controller::HandleFormatCommand(const std::vector<std::string>& i_args){
   if (i_args.size() != 4)
     std::cout << "Wrongs arguments for the format command. See help for the list of all available arguments." << std::endl;
 
-  std::string config = _GetFileContent(i_args[1]);
-  ConfigInfo config_info = ConfigParser::Parse(config);
+  const ConfigInfo config_info = _GetConfigFromFile(i_args[1]);
   
   Logger logger("./errors.log");
 
@@ -184,15 +175,14 @@ void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
   else if (i_args[2] == "-p")
     _FormatDirectory(i_args[3], config_info, logger, true);
   else
-    std::cout << "Wrong arguments" << std::endl;
+    std::cout << "Wrong argument " << i_args[2] << std::endl;
 }
 
-void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
+void Controller::HandleVerifyCommand(const std::vector<std::string>& i_args){
   if (i_args.size() != 4)
     std::cout << "Wrongs arguments for the verify command. See help for the list of all available arguments." << std::endl;
 
-  std::string config = _GetFileContent(i_args[1]);
-  ConfigInfo config_info = ConfigParser::Parse(config);
+  const ConfigInfo config_info = _GetConfigFromFile(i_args[1]);
 
   Logger logger("./errors.log");
 
@@ -203,5 +193,5 @@ void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
   else if (i_args[2] == "-p")
     _VerifyDirectory(i_args[3], config_info, logger, true);
   else
-    std::cout << "Wrong arguments" << std::endl;
+    std::cout << "Wrong argument " << i_args[2] << std::endl;
 }
