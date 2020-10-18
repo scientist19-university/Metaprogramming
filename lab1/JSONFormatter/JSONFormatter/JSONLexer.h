@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Token.h"
+#include "Logger.h"
+
 #include <vector>
 
 using namespace JSON;
@@ -12,7 +14,7 @@ public:
   JSONLexer() = default;
   ~JSONLexer() = default;
 
-  static Tokens Lex(std::string& i_str);
+  static Tokens Lex(std::string& i_str, const Logger& i_logger);
 
   static Token LexNumber(std::string& i_str);
   static Token LexJsonString(std::string& i_str);

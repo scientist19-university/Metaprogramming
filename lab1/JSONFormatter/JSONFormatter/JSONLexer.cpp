@@ -8,7 +8,7 @@ namespace {
 }
 
 
-Tokens JSONLexer::Lex(std::string& i_str){
+Tokens JSONLexer::Lex(std::string& i_str, const Logger& i_logger){
   Tokens tokens;
 
   int cur_line_number = 1;
@@ -34,6 +34,11 @@ Tokens JSONLexer::Lex(std::string& i_str){
       tokens.push_back(json_token);
       continue;
     }
+    else if (i_str.empty()) {
+      i_logger.PrintError(cur_line_number, "Closing quote is missing.");
+      break;
+    }
+      
 
     auto char_token = LexSpecialChar(i_str);
     char_token.m_line_number = cur_line_number;
@@ -51,7 +56,9 @@ Tokens JSONLexer::Lex(std::string& i_str){
       continue;
     }
 
-    // log error 'Unexpected character'
+    std::string message = "Unexpected character ";
+    message += i_str[0];
+    i_logger.PrintError(cur_line_number, message);
     i_str.erase(0, 1);
   }
 
@@ -96,9 +103,6 @@ Token JSONLexer::LexJsonString(std::string & i_str){
   }
 
   i_str.erase(i_str.begin(), i_str.end());
-
-  // log error "No closing quote found"
-
   return EMPTY_TOKEN;
 }
 
@@ -135,10 +139,10 @@ Token JSONLexer::LexSpecialChar(std::string& i_str){
   
   char c = i_str[0];
 
-  // TODO: replace with new method
-  if (SPECIAL_CHARS.find(c) != SPECIAL_CHARS.end()) {
-    i_str.erase(i_str.begin());
-    return Token(c);
+  auto res = Token(c);
+  if (res.IsSpecialChar()) {
+    i_str.erase(0, 1);
+    return res;
   }
 
   return EMPTY_TOKEN;

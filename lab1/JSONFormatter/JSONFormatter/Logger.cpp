@@ -29,7 +29,7 @@ void Logger::SetCurFileName(const char* i_file_name) {
   m_cur_file_name = i_file_name;
 }
 
-void Logger::PrintError(int i_line_number, const char * i_message) const{
+void Logger::PrintError(int i_line_number, const std::string& i_message) const{
   m_log_file << m_cur_file_name << ": Line " << i_line_number << " - " << i_message << std::endl;
 }
 

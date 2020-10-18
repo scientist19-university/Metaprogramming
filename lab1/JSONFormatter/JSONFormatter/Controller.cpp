@@ -93,7 +93,10 @@ void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
 
   std::string text = _GetFileContent(i_args[3]);
   
-  auto tokens = JSONLexer::Lex(text);
+  Logger logger("./errors.log");
+  logger.SetCurFileName(i_args[1].c_str());
+
+  auto tokens = JSONLexer::Lex(text, logger);
   auto formatted_tokens = JSONFormatter::Format(tokens, config_info);
 
   if (tokens != formatted_tokens)
@@ -107,11 +110,11 @@ void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
   std::string config = _GetFileContent(i_args[1]);
   ConfigInfo config_info = ConfigParser::Parse(config);
 
-  std::string text = _GetFileContent(i_args[3]);
-  auto tokens = JSONLexer::Lex(text);
-
   Logger logger("./errors.log");
   logger.SetCurFileName(i_args[1].c_str());
+
+  std::string text = _GetFileContent(i_args[3]);
+  auto tokens = JSONLexer::Lex(text, logger);
 
   JSONFormatter::Verify(tokens, config_info, logger);
 }

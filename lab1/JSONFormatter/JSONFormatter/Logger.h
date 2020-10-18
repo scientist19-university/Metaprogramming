@@ -14,7 +14,7 @@ public:
 
   void SetCurFileName(const char* i_file_name);
 
-  void PrintError(int i_line_number, const char* i_message) const;
+  void PrintError(int i_line_number, const std::string& i_message) const;
   void PrintErrorExtraChar(const Token& i_extra_token) const;
   void PrintErrorMissingChar(int i_line_number, const Token& i_missing_token) const;
   void PrintErrorWrongChar(const Token& i_actual_token, const Token& i_expected_token) const;
