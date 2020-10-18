@@ -8,6 +8,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+
+const char* g_json_extension = ".json";
+
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -33,7 +38,7 @@ namespace {
   std::string _GetFileContent(const std::string& i_path) {
     std::ifstream fin(i_path);
     std::string content((std::istreambuf_iterator<char>(fin)),
-      std::istreambuf_iterator<char>());
+                         std::istreambuf_iterator<char>());
     fin.close();
     return content;
   }
@@ -46,6 +51,84 @@ namespace {
     fout.close();
   }
 
+  void _FormatFile(const fs::path& i_file_path, const ConfigInfo& i_config_info, Logger& i_logger) {
+
+    try {
+      fs::directory_entry(i_file_path).exists();
+    }
+    catch (...) {
+      i_logger.PrintError("File \"" + i_file_path.string() + "\" does not exist.");
+      return;
+    }
+
+    i_logger.SetCurFileName(i_file_path.string());
+    std::string text = _GetFileContent(i_file_path.string());
+
+    auto tokens = JSONLexer::Lex(text, i_logger);
+    auto formatted_tokens = JSONFormatter::Format(tokens, i_config_info);
+
+    if (tokens != formatted_tokens)
+      _PrintToFile(formatted_tokens, i_file_path.string());
+  }
+
+  void _FormatDirectory(const fs::path& i_directory, const ConfigInfo& i_config_info, Logger& i_logger, bool i_recursive) {
+
+    try {
+      fs::directory_entry(i_directory).exists();
+    }
+    catch (...) {
+      i_logger.PrintError("Directory \"" + i_directory.string() + "\" does not exist.");
+      return;
+    }
+
+    for (const auto& dir_entry : fs::directory_iterator(i_directory)) {
+      if (dir_entry.is_directory() && i_recursive)
+        _FormatDirectory(dir_entry.path(), i_config_info, i_logger, i_recursive);
+
+      if (dir_entry.path().extension() == g_json_extension)
+        _FormatFile(dir_entry.path(), i_config_info, i_logger);
+    }
+      
+  }
+
+  void _VerifyFile(const fs::path& i_file_path, const ConfigInfo& i_config_info, Logger& i_logger) {
+
+    try {
+      fs::directory_entry(i_file_path).exists();
+    }
+    catch (...) {
+      i_logger.PrintError("File \"" + i_file_path.string() + "\" does not exist.");
+      return;
+    }
+
+    i_logger.SetCurFileName(i_file_path.string());
+    std::string text = _GetFileContent(i_file_path.string());
+
+    auto tokens = JSONLexer::Lex(text, i_logger);
+    auto formatted_tokens = JSONFormatter::Format(tokens, i_config_info);
+
+    JSONFormatter::Verify(tokens, i_config_info, i_logger);
+  }
+
+  void _VerifyDirectory(const fs::path& i_directory, const ConfigInfo& i_config_info, Logger& i_logger, bool i_recursive) {
+
+    try {
+      fs::directory_entry(i_directory).exists();
+    }
+    catch (...) {
+      i_logger.PrintError("Directory \"" + i_directory.string() + "\" does not exist.");
+      return;
+    }
+
+    for (const auto& dir_entry : fs::directory_iterator(i_directory)) {
+      if (dir_entry.is_directory() && i_recursive)
+        _VerifyDirectory(dir_entry.path(), i_config_info, i_logger, i_recursive);
+
+      if (dir_entry.path().extension() == g_json_extension)
+        _VerifyFile(dir_entry.path(), i_config_info, i_logger);
+    }
+
+  }
 }
 
 void Controller::Start(){
@@ -68,6 +151,7 @@ void Controller::PrintUnknownCommandMessage(){
 }
 
 void Controller::ParseCommand(const std::vector<std::string>& i_args){
+
   if (i_args.empty()) {
     PrintUnknownCommandMessage();
     return;
@@ -90,17 +174,17 @@ void Controller::ParseFormatCommand(const std::vector<std::string>& i_args){
 
   std::string config = _GetFileContent(i_args[1]);
   ConfigInfo config_info = ConfigParser::Parse(config);
-
-  std::string text = _GetFileContent(i_args[3]);
   
   Logger logger("./errors.log");
-  logger.SetCurFileName(i_args[1].c_str());
 
-  auto tokens = JSONLexer::Lex(text, logger);
-  auto formatted_tokens = JSONFormatter::Format(tokens, config_info);
-
-  if (tokens != formatted_tokens)
-    _PrintToFile(formatted_tokens, i_args[3]);
+  if (i_args[2] == "-f")
+    _FormatFile(i_args[3], config_info, logger);
+  else if (i_args[2] == "-d")
+    _FormatDirectory(i_args[3], config_info, logger, false);
+  else if (i_args[2] == "-p")
+    _FormatDirectory(i_args[3], config_info, logger, true);
+  else
+    std::cout << "Wrong arguments" << std::endl;
 }
 
 void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
@@ -111,10 +195,13 @@ void Controller::ParseVerifyCommand(const std::vector<std::string>& i_args){
   ConfigInfo config_info = ConfigParser::Parse(config);
 
   Logger logger("./errors.log");
-  logger.SetCurFileName(i_args[1].c_str());
 
-  std::string text = _GetFileContent(i_args[3]);
-  auto tokens = JSONLexer::Lex(text, logger);
-
-  JSONFormatter::Verify(tokens, config_info, logger);
+  if (i_args[2] == "-f")
+    _VerifyFile(i_args[3], config_info, logger);
+  else if (i_args[2] == "-d")
+    _VerifyDirectory(i_args[3], config_info, logger, false);
+  else if (i_args[2] == "-p")
+    _VerifyDirectory(i_args[3], config_info, logger, true);
+  else
+    std::cout << "Wrong arguments" << std::endl;
 }

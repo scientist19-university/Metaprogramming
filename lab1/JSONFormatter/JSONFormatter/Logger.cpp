@@ -25,8 +25,12 @@ Logger::~Logger() {
   m_log_file.close();
 }
 
-void Logger::SetCurFileName(const char* i_file_name) {
+void Logger::SetCurFileName(const std::string& i_file_name) {
   m_cur_file_name = i_file_name;
+}
+
+void Logger::PrintError(const std::string & i_message) const {
+  m_log_file << i_message << std::endl;
 }
 
 void Logger::PrintError(int i_line_number, const std::string& i_message) const{

@@ -12,8 +12,9 @@ public:
   Logger(const char* i_log_path);
   ~Logger();
 
-  void SetCurFileName(const char* i_file_name);
+  void SetCurFileName(const std::string& i_file_name);
 
+  void PrintError(const std::string& i_message) const;
   void PrintError(int i_line_number, const std::string& i_message) const;
   void PrintErrorExtraChar(const Token& i_extra_token) const;
   void PrintErrorMissingChar(int i_line_number, const Token& i_missing_token) const;
@@ -21,6 +22,6 @@ public:
 
 private:
   mutable std::ofstream m_log_file;
-  const char* m_cur_file_name;
+  std::string m_cur_file_name;
 };
 
