@@ -16,9 +16,12 @@ namespace {
 
   void _AddWhitespacesWithNL(Tokens& i_tokens, int i_level, int i_nl_number, const ConfigInfo& i_config_info) {
     int nl_number = std::max(1, std::min(i_nl_number, i_config_info.m_max_blank_lines_number + 1));
+
     for (int i = 0; i < nl_number; i++) {
       i_tokens.push_back(NEW_LINE);
-      _AddWhitespaces(i_tokens, i_level, i_config_info);
+
+      if (i == nl_number - 1 || i_config_info.m_keep_indents_on_empty_lines)
+        _AddWhitespaces(i_tokens, i_level, i_config_info);
     }
   }
 
