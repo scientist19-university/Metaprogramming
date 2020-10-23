@@ -20,6 +20,9 @@ namespace {
   const char* g_wrap_arrays_keyword = "wrap_arrays";
   const char* g_wrap_objects_keyword = "wrap_objects";
 
+  const char* g_space_within_braces = "space_within_braces";
+  const char* g_space_within_brackets = "space_within_brackets";
+
 
   // TODO: replace this function to utils
   std::vector<std::string> _SplitLine(const std::string& i_line) {
@@ -87,6 +90,10 @@ ConfigInfo ConfigParser::Parse(const std::string & i_string){
       res.m_wrap_arrays = ParseBool(params[i + 1]);
     else if (params[i] == g_wrap_objects_keyword)
       res.m_wrap_objects = ParseBool(params[i + 1]);
+    else if (params[i] == g_space_within_braces)
+      res.m_space_within_braces = ParseBool(params[i + 1]);
+    else if (params[i] == g_space_within_brackets)
+      res.m_space_within_brackets = ParseBool(params[i + 1]);
 
   }
 

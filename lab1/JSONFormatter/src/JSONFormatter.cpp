@@ -79,6 +79,12 @@ namespace {
     bool is_bracket = (i_token == LEFT_BRACKET || i_token == RIGHT_BRACKET);
     return ((is_brace && i_config_info.m_wrap_objects) || (is_bracket && i_config_info.m_wrap_arrays));
   }
+
+  bool _NeedSpaceWithin(const Token& i_token, const ConfigInfo& i_config_info) {
+    bool is_brace = (i_token == LEFT_BRACE || i_token == RIGHT_BRACE);
+    bool is_bracket = (i_token == LEFT_BRACKET || i_token == RIGHT_BRACKET);
+    return ((is_brace && i_config_info.m_space_within_braces) || (is_bracket && i_config_info.m_space_within_brackets));
+  }
 }
 
 void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_info, const Logger& i_logger){
@@ -105,7 +111,7 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
 
       if (_NeedWrap(cur_token, i_config_info))
         _AddWhitespacesWithNL(ws_ref, level, actual_nl_number, i_config_info);
-      else
+      else if (_NeedSpaceWithin(cur_token, i_config_info))
         ws_ref.push_back(SPACE);
 
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
@@ -141,7 +147,7 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
 
       if (_NeedWrap(cur_token, i_config_info))
         _AddWhitespacesWithNL(ws_ref, level, _CountNewLines(prev_ws_actual), i_config_info);
-      else
+      else if (_NeedSpaceWithin(cur_token, i_config_info))
         ws_ref.push_back(SPACE);
 
       _VerifyWhitespaces(prev_ws_actual, ws_ref, i_logger, cur_token);
@@ -174,7 +180,7 @@ Tokens JSONFormatter::Format(const Tokens& i_tokens, const ConfigInfo& i_config_
 
       if (_NeedWrap(cur_token, i_config_info)) 
         _AddWhitespacesWithNL(formatted_tokens, level, nl_number, i_config_info);
-      else
+      else if (_NeedSpaceWithin(cur_token, i_config_info))
         formatted_tokens.push_back(SPACE);
 
     }
@@ -184,7 +190,7 @@ Tokens JSONFormatter::Format(const Tokens& i_tokens, const ConfigInfo& i_config_
 
       if (_NeedWrap(cur_token, i_config_info))
         _AddWhitespacesWithNL(formatted_tokens, level, _CountNewLines(prev_ws), i_config_info);
-      else
+      else if (_NeedSpaceWithin(cur_token, i_config_info))
         formatted_tokens.push_back(SPACE);
 
       formatted_tokens.push_back(cur_token);
