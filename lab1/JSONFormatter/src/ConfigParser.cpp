@@ -3,14 +3,20 @@
 
 #include <vector>
 
-const char* g_use_tabs_keyword = "use_tabs";
-const char* g_indent_size_keyword = "indent_size";
-const char* g_max_blank_lines_number = "max_blank_lines";
-const char* g_space_after_comma_keyword = "space_after_comma";
-const char* g_space_after_colon_keyword = "space_after_colon";
-const char* g_keep_indents_on_empty_lines = "keep_indents_on_empty_lines";
-
 namespace {
+
+  const char* g_use_tabs_keyword = "use_tabs";
+  const char* g_indent_size_keyword = "indent_size";
+
+  const char* g_max_blank_lines_number = "max_blank_lines";
+  const char* g_keep_indents_on_empty_lines = "keep_indents_on_empty_lines";
+
+  const char* g_space_after_comma_keyword = "space_after_comma";
+  const char* g_space_before_comma_keyword = "space_before_comma";
+
+  const char* g_space_after_colon_keyword = "space_after_colon";
+  const char* g_space_before_colon_keyword = "space_before_colon";
+
 
   // TODO: replace this function to utils
   std::vector<std::string> _SplitLine(const std::string& i_line) {
@@ -70,6 +76,10 @@ ConfigInfo ConfigParser::Parse(const std::string & i_string){
       res.m_space_after_colon = ParseBool(params[i + 1]);
     else if (params[i] == g_keep_indents_on_empty_lines)
       res.m_keep_indents_on_empty_lines = ParseBool(params[i + 1]);
+    else if (params[i] == g_space_before_comma_keyword)
+      res.m_space_before_comma = ParseBool(params[i + 1]);
+    else if (params[i] == g_space_before_colon_keyword)
+      res.m_space_before_colon = ParseBool(params[i + 1]);
 
   }
 

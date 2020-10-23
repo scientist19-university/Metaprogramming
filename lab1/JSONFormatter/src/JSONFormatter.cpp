@@ -20,6 +20,7 @@ namespace {
     for (int i = 0; i < nl_number; i++) {
       i_tokens.push_back(NEW_LINE);
 
+      // for the last new line indent should always be present as there is next non-white token
       if (i == nl_number - 1 || i_config_info.m_keep_indents_on_empty_lines)
         _AddWhitespaces(i_tokens, i_level, i_config_info);
     }
@@ -98,13 +99,26 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
     }
     else if (cur_token == COMMA) {
+
+      if (i_config_info.m_space_before_comma)
+        _VerifyWhitespaces(prev_ws_actual, { SPACE }, i_logger, cur_token);
+      else
+        _VerifyWhitespaces(prev_ws_actual, {}, i_logger, cur_token);
+
       if (i_config_info.m_space_after_comma)
         ws_ref.push_back(SPACE);
       _AddWhitespacesWithNL(ws_ref, level, actual_nl_number, i_config_info);
+
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
     }
     else if (cur_token == COLON) {
-      _VerifyWhitespaces(prev_ws_actual, ws_ref, i_logger, cur_token);
+      //_VerifyWhitespaces(prev_ws_actual, ws_ref, i_logger, cur_token);
+
+      if (i_config_info.m_space_before_colon)
+        _VerifyWhitespaces(prev_ws_actual, { SPACE }, i_logger, cur_token);
+      else
+        _VerifyWhitespaces(prev_ws_actual, {}, i_logger, cur_token);
+
       if (i_config_info.m_space_after_colon)
         ws_ref.push_back(SPACE);
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
@@ -146,13 +160,22 @@ Tokens JSONFormatter::Format(const Tokens& i_tokens, const ConfigInfo& i_config_
       formatted_tokens.push_back(cur_token);
     }
     else if (cur_token == COMMA) {
+      if (i_config_info.m_space_before_comma)
+        formatted_tokens.push_back(SPACE);
+
       formatted_tokens.push_back(cur_token);
+
       if (i_config_info.m_space_after_comma)
         formatted_tokens.push_back(SPACE);
+
       _AddWhitespacesWithNL(formatted_tokens, level, nl_number, i_config_info);
     }
     else if (cur_token == COLON) {
+      if (i_config_info.m_space_before_colon)
+        formatted_tokens.push_back(SPACE);
+
       formatted_tokens.push_back(cur_token);
+
       if (i_config_info.m_space_after_colon)
         formatted_tokens.push_back(SPACE);
     }
