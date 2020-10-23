@@ -19,13 +19,13 @@ Navigate to `Release` directory, you will find `JSONFormatter.exe`
 ### Command line options
 ```text
 Options:
-  --format <path to config> -(f | d | p) <path to file to format>     Format specified file/directory/project  
-  -f <path to config> -(f | d | p) <path to file to format>           according to the provided template  
+  --format <path-to-config> -(f | d | p) <path-to-file>     Format specified file/directory/project  
+  -f <path-to-config> -(f | d | p) <path-to-file>           according to the provided template  
    
-  --verify <path to config> -(f | d | p) <path to file to verify>     Verify specified file/directory/project  
-  -v <path to config> -(f | d | p) <path to file to verify>           according to the provided template  
+  --verify <path-to-config> -(f | d | p) <path-to-file>     Verify specified file/directory/project  
+  -v <path-to-config> -(f | d | p) <path-to-file>           according to the provided template  
    
-  --help                                                              Print help  
+  --help                                                    Print help  
   -h
   ```  
 
@@ -37,9 +37,21 @@ The list of all parameters and its default values:
 ```t
 use_tabs false
 indent_size 4
+
 max_blank_lines 1
+keep_indents_on_empty_lines false
+
+space_before_comma false
 space_after_comma false
+
+space_before_colon false
 space_after_colon true
+
+wrap_objects true
+wrap_arrays true
+
+space_within_braces true
+space_within_brackets true
 ```  
   
 For better understanding, see `Metaprogramming\lab1\JSONFormatter\examples\config.ini`
