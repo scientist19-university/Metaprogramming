@@ -17,6 +17,9 @@ namespace {
   const char* g_space_after_colon_keyword = "space_after_colon";
   const char* g_space_before_colon_keyword = "space_before_colon";
 
+  const char* g_wrap_arrays_keyword = "wrap_arrays";
+  const char* g_wrap_objects_keyword = "wrap_objects";
+
 
   // TODO: replace this function to utils
   std::vector<std::string> _SplitLine(const std::string& i_line) {
@@ -80,6 +83,10 @@ ConfigInfo ConfigParser::Parse(const std::string & i_string){
       res.m_space_before_comma = ParseBool(params[i + 1]);
     else if (params[i] == g_space_before_colon_keyword)
       res.m_space_before_colon = ParseBool(params[i + 1]);
+    else if (params[i] == g_wrap_arrays_keyword)
+      res.m_wrap_arrays = ParseBool(params[i + 1]);
+    else if (params[i] == g_wrap_objects_keyword)
+      res.m_wrap_objects = ParseBool(params[i + 1]);
 
   }
 

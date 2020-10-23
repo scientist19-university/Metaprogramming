@@ -73,6 +73,12 @@ namespace {
         ans++;
     return ans;
   }
+
+  bool _NeedWrap(const Token& i_token, const ConfigInfo& i_config_info) {
+    bool is_brace = (i_token == LEFT_BRACE || i_token == RIGHT_BRACE);
+    bool is_bracket = (i_token == LEFT_BRACKET || i_token == RIGHT_BRACKET);
+    return ((is_brace && i_config_info.m_wrap_objects) || (is_bracket && i_config_info.m_wrap_arrays));
+  }
 }
 
 void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_info, const Logger& i_logger){
@@ -94,8 +100,14 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
 
     Tokens ws_ref;
     if (cur_token == LEFT_BRACE || cur_token == LEFT_BRACKET) {
+
       level++;
-      _AddWhitespacesWithNL(ws_ref, level, actual_nl_number, i_config_info);
+
+      if (_NeedWrap(cur_token, i_config_info))
+        _AddWhitespacesWithNL(ws_ref, level, actual_nl_number, i_config_info);
+      else
+        ws_ref.push_back(SPACE);
+
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
     }
     else if (cur_token == COMMA) {
@@ -112,7 +124,6 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
     }
     else if (cur_token == COLON) {
-      //_VerifyWhitespaces(prev_ws_actual, ws_ref, i_logger, cur_token);
 
       if (i_config_info.m_space_before_colon)
         _VerifyWhitespaces(prev_ws_actual, { SPACE }, i_logger, cur_token);
@@ -121,11 +132,18 @@ void JSONFormatter::Verify(const Tokens& i_tokens, const ConfigInfo& i_config_in
 
       if (i_config_info.m_space_after_colon)
         ws_ref.push_back(SPACE);
+
       _VerifyWhitespaces(ws_actual, ws_ref, i_logger, cur_token);
     }
     else if (cur_token == RIGHT_BRACE || cur_token == RIGHT_BRACKET) {
+
       level--;
-      _AddWhitespacesWithNL(ws_ref, level, _CountNewLines(prev_ws_actual), i_config_info);
+
+      if (_NeedWrap(cur_token, i_config_info))
+        _AddWhitespacesWithNL(ws_ref, level, _CountNewLines(prev_ws_actual), i_config_info);
+      else
+        ws_ref.push_back(SPACE);
+
       _VerifyWhitespaces(prev_ws_actual, ws_ref, i_logger, cur_token);
     }
 
@@ -150,13 +168,25 @@ Tokens JSONFormatter::Format(const Tokens& i_tokens, const ConfigInfo& i_config_
     int nl_number = _CountNewLines(ws);
   
     if (cur_token == LEFT_BRACE || cur_token == LEFT_BRACKET) {
+
       formatted_tokens.push_back(cur_token);
       level++;
-      _AddWhitespacesWithNL(formatted_tokens, level, nl_number, i_config_info);
+
+      if (_NeedWrap(cur_token, i_config_info)) 
+        _AddWhitespacesWithNL(formatted_tokens, level, nl_number, i_config_info);
+      else
+        formatted_tokens.push_back(SPACE);
+
     }
     else if (cur_token == RIGHT_BRACE || cur_token == RIGHT_BRACKET) {
+
       level--;
-      _AddWhitespacesWithNL(formatted_tokens, level, _CountNewLines(prev_ws), i_config_info);
+
+      if (_NeedWrap(cur_token, i_config_info))
+        _AddWhitespacesWithNL(formatted_tokens, level, _CountNewLines(prev_ws), i_config_info);
+      else
+        formatted_tokens.push_back(SPACE);
+
       formatted_tokens.push_back(cur_token);
     }
     else if (cur_token == COMMA) {
