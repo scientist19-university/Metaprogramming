@@ -9,6 +9,14 @@ class Lexer:
         lexems = []
 
         while str:
+            multi_comment, str = cls.__lex_multi_comment(str)
+            if multi_comment:
+                lexems.append(multi_comment)
+                continue
+            comment, str = cls.__lex_comment(str)
+            if comment:
+                lexems.append(comment)
+                continue
             string, str = cls.__lex_str(str)
             if string:
                 lexems.append(string)
@@ -20,6 +28,10 @@ class Lexer:
             number, str = cls.__lex_number(str)
             if number:
                 lexems.append(number)
+                continue
+            whitespace, str = cls.__lex_whitespace(str)
+            if whitespace:
+                lexems.append(whitespace)
                 continue
             symbol, str = cls.__lex_symbol(str)
             if symbol:
@@ -78,6 +90,42 @@ class Lexer:
             return Lexema(LexemType.AT, str[0:1]), str[1:]
         else:
             return None, str
+
+    @classmethod
+    def __lex_whitespace(cls, str):
+        i = 0
+        while str[i] in ' \n\r\t\v\0\f':
+            i += 1
+
+        if i == 0:
+            return None, str
+        else:
+            return Lexema(LexemType.WHITESPACE, str[0:i]), str[i:]
+
+    @classmethod
+    def __lex_multi_comment(cls, str):
+        if not (str[0] == '/' and str[1] == '*'):
+            return None, str
+        i = 2
+
+        while i < len(str) - 1 and not (str[i] == '*' and str[i + 1] == '/'):
+            i += 1
+        if i == len(str) - 1:
+            return None, str
+        i += 2
+
+        return Lexema(LexemType.MULTI_COMMENT, str[0:i]), str[i:]
+
+    @classmethod
+    def __lex_comment(cls, str):
+        if not (str[0] == '/' and str[1] == '/'):
+            return None, str
+        i = 2
+
+        while str[i] != '\n':
+            i += 1
+
+        return Lexema(LexemType.COMMENT, str[0:i]), str[i:]
 
     @classmethod
     def __lex_identifier(cls, str):
