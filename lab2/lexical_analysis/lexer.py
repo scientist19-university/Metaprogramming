@@ -94,7 +94,7 @@ class Lexer:
     @classmethod
     def __lex_whitespace(cls, str):
         i = 0
-        while str[i] in ' \n\r\t\v\0\f':
+        while i < len(str) and str[i] in ' \n\r\t\v\0\f':
             i += 1
 
         if i == 0:
@@ -122,7 +122,7 @@ class Lexer:
             return None, str
         i = 2
 
-        while str[i] != '\n':
+        while i < len(str) and str[i] != '\n':
             i += 1
 
         return Lexema(LexemType.COMMENT, str[0:i]), str[i:]
@@ -133,7 +133,7 @@ class Lexer:
         if str[i] != '_' and not str[i].isalpha():
             return None, str
 
-        while str[i].isalpha() or str[i].isnumeric() or str[i] == '_':
+        while i < len(str) and (str[i].isalpha() or str[i].isnumeric() or str[i] == '_'):
             i += 1
 
         return Lexema(LexemType.IDENTIFIER, str[0:i]), str[i:]

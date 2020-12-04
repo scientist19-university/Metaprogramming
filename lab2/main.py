@@ -13,10 +13,16 @@ def main():
            '@private\n' \
            '// comment\n' \
            '/* another comment\n' \
-           'bla bla */' \
+           'bla bla */ const hello = \"hello\"\n' \
            'private_function (var1, var2, var3)' \
            '//@private\n' \
-           'not_private_function (var1, var2)'
+           'not_private_function (var1, var2)\n' \
+           'class /* comment */Rectangle {}\n' \
+           'colors = {\n' \
+           '    RED: 1,\n' \
+           '    GREEN: 2,\n' \
+           '    blue: 3\n' \
+           '}\n'
 
     lexems = Lexer.lex(text)
     Parser.parse(lexems)
