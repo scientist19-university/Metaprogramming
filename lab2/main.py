@@ -1,4 +1,5 @@
 from lexical_analysis.lexer import Lexer
+from semantical_analysis.parser import Parser
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
            'not_private_function (var1, var2)'
 
     lexems = Lexer.lex(text)
+    Parser.parse(lexems)
 
     for lexem in lexems:
         print(lexem.get_type())
