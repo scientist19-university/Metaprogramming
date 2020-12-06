@@ -24,6 +24,12 @@ def main():
            '    blue: 3\n' \
            '}\n'
 
+    test_file = 'test.js'
+
+    f = open(test_file, 'r')
+    text = f.read()
+    f.close()
+
     lexems = Lexer.lex(text)
     Parser.parse(lexems)
 

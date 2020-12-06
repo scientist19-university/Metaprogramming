@@ -26,6 +26,20 @@ class Parser:
             next_position = cls.__get_next_lexema_position(lexems, position)
 
             if next_position and lexems[next_position].get_type() == LexemType.LEFT_PAREN:
+                i = next_position + 1
+                opened_paren = 1
+                while i < len(lexems) and opened_paren != 0:
+                    if lexems[i].get_type() == LexemType.LEFT_PAREN:
+                        opened_paren += 1
+                    elif lexems[i].get_type() == LexemType.RIGHT_PAREN:
+                        opened_paren -= 1
+                    i += 1
+                if i == len(lexems):
+                    return position
+                next_after_right_paren = cls.__get_next_lexema_position(lexems, i)
+                if lexems[next_after_right_paren].get_type() != LexemType.LEFT_BRACE:
+                    return position
+
                 lexems[position].set_type(LexemType.FUNCTION_IDENTIFIER)
                 prev_position = cls.__get_prev_lexema_position(lexems, position)
 
@@ -34,7 +48,11 @@ class Parser:
                     lexems[position].set_type(LexemType.PRIVATE_FUNCTION_IDENTIFIER)
 
                 i = next_position + 1
-                while i < len(lexems) and lexems[i].get_type() != LexemType.RIGHT_PAREN:
+                while i < len(lexems) and opened_paren != 0:
+                    if lexems[i].get_type() == LexemType.LEFT_PAREN:
+                        opened_paren += 1
+                    elif lexems[i].get_type() == LexemType.RIGHT_PAREN:
+                        opened_paren -= 1
                     if lexems[i].get_type() == LexemType.IDENTIFIER:
                         lexems[i].set_type(LexemType.VARIABLE_IDENTIFIER)
                     i += 1
