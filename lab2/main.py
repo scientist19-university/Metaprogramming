@@ -36,14 +36,15 @@ def main():
     lexems = Lexer.lex(text)
     Parser.parse(lexems)
 
-    for lexem in lexems:
-        print(lexem.get_type())
-        print('\'' + lexem.get_str() + '\'')
+    #for lexem in lexems:
+    #    print(lexem.get_type())
+    #    print('\'' + lexem.get_str() + '\'')
 
     fixes = NamingFixer.analyze(lexems)
 
     for fix in fixes:
         print(f'{fix[0]} -> {fix[1]}')
+
     '''
     test1 = 'HelloWorld'
     test2 = 'HELLO_WORLD123'
