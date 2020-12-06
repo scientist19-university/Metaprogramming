@@ -78,6 +78,7 @@ class Parser:
                     i += 1
                 if i == len(lexems):
                     return position
+
                 next_after_right_paren = cls.__get_next_lexema_position(lexems, i)
                 if lexems[next_after_right_paren].get_type() != LexemType.LEFT_BRACE:
                     return position
@@ -90,6 +91,7 @@ class Parser:
                     lexems[position].set_type(LexemType.PRIVATE_FUNCTION_IDENTIFIER)
 
                 i = next_position + 1
+                opened_paren = 1
                 while i < len(lexems) and opened_paren != 0:
                     if lexems[i].get_type() == LexemType.LEFT_PAREN:
                         opened_paren += 1
