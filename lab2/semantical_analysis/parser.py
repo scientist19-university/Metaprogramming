@@ -18,7 +18,49 @@ class Parser:
             if next_position != position:
                 position = next_position
                 continue
+            next_position = cls.__parse_enum(lexems, position)
+            if next_position != position:
+                position = next_position
+                continue
             position += 1
+
+    @classmethod
+    def __parse_enum(cls, lexems, position):
+        if lexems[position].get_type() == LexemType.IDENTIFIER:
+            prev_position = cls.__get_prev_lexema_position(lexems, position)
+
+            if prev_position != None and lexems[prev_position].get_str() == 'enum':
+                lexems[position].set_type(LexemType.ENUM_IDENTIFIER)
+
+                next_position = cls.__get_next_lexema_position(lexems, position)
+
+                if next_position and lexems[next_position].get_type() == LexemType.EQUAL:
+                    next_position = cls.__get_next_lexema_position(lexems, next_position)
+
+                if next_position < len(lexems) and lexems[next_position].get_type() == LexemType.LEFT_BRACE:
+                    i = next_position + 1
+                    opened_brace = 1
+                    while i < len(lexems) and opened_brace != 0:
+                        if lexems[i].get_type() == LexemType.LEFT_BRACE:
+                            opened_brace += 1
+                        elif lexems[i].get_type() == LexemType.RIGHT_BRACE:
+                            opened_brace -= 1
+                        i += 1
+                    if i == len(lexems):
+                        return position
+
+                    i = next_position + 1
+                    opened_brace = 1
+                    while i < len(lexems) and opened_brace != 0:
+                        if lexems[i].get_type() == LexemType.LEFT_BRACE:
+                            opened_brace += 1
+                        elif lexems[i].get_type() == LexemType.RIGHT_BRACE:
+                            opened_brace -= 1
+
+                        if lexems[i].get_type() == LexemType.IDENTIFIER:
+                            lexems[i].set_type(LexemType.CONSTANT_IDENTIFIER)
+                        i += 1
+        return position
 
     @classmethod
     def __parse_function(cls, lexems, position):
@@ -76,13 +118,6 @@ class Parser:
                     lexems[position].set_type(LexemType.CONSTANT_IDENTIFIER)
                     position += 1
                     return position
-
-            next_position = cls.__get_next_lexema_position(lexems, position)
-            if next_position:
-                next_lexema = lexems[next_position]
-                if next_lexema.get_type() == LexemType.COLON:
-                    lexems[position].set_type(LexemType.CONSTANT_IDENTIFIER)
-                    position += 1
 
         return position
 

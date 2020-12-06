@@ -88,6 +88,10 @@ class Lexer:
             return Lexema(LexemType.SEMICOLON, str[0:1]), str[1:]
         elif str[0] == '@':
             return Lexema(LexemType.AT, str[0:1]), str[1:]
+        elif str[0] == '?':
+            return Lexema(LexemType.SEMICOLON, str[0:1]), str[1:]
+        elif str[0] == '!':
+            return Lexema(LexemType.AT, str[0:1]), str[1:]
         else:
             return None, str
 

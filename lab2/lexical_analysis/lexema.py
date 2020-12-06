@@ -67,6 +67,9 @@ class Lexema:
     def get_str(self):
         return self.__str
 
+    def set_str(self, new_str):
+        self.__str = new_str
+
     def get_line(self):
         return self.__line
 
