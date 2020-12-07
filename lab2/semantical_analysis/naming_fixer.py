@@ -1,18 +1,49 @@
+import logging
 import re
 import string
 
 from lexical_analysis.lexema import LexemType
+from lexical_analysis.lexer import Lexer
+from semantical_analysis.parser import Parser
 
 
 class NamingFixer:
 
     @classmethod
-    def verify(cls):
-        print()
+    def verify_file(cls, filepath, logger):
+        f = open(filepath, 'r')
+        text = f.read()
+        f.close()
+        lexems = Lexer.lex(text)
+        Parser.parse(lexems)
+
+        fixes = cls.analyze(lexems)
+
+        for fix in fixes:
+            for lexema in lexems:
+                if lexema.get_str() == fix[0]:
+                    logging.warning(f'{filepath}: {fix[0]} naming error -> should be {fix[1]}')
 
     @classmethod
-    def fix(cls):
-        print()
+    def fix_file(cls, filepath, logger):
+        f = open(filepath, 'r')
+        text = f.read()
+        f.close()
+        lexems = Lexer.lex(text)
+        Parser.parse(lexems)
+
+        fixes = cls.analyze(lexems)
+
+        for fix in fixes:
+            for lexema in lexems:
+                if lexema.get_str() == fix[0]:
+                    lexema.set_str(fix[1])
+                    logging.error(f'{filepath}: {fix[0]} naming error -> fixed to {fix[1]}')
+
+        f = open(filepath, 'w')
+        for lexema in lexems:
+            f.write(lexema.get_str())
+        f.close()
 
     @classmethod
     def analyze(cls, lexems):

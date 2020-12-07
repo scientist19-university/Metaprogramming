@@ -1,3 +1,4 @@
+import logging
 import re
 
 from lexical_analysis.lexer import Lexer
@@ -28,6 +29,7 @@ def main():
            '}\n'
 
     test_file = 'D:\\Meta\\Lab2\\JsFiles\\test.js'
+    test_file = 'D:\\Meta\\Lab2\\JsFiles\\test.log'
 
     f = open(test_file, 'r')
     text = f.read()
@@ -40,10 +42,20 @@ def main():
     #    print(lexem.get_type())
     #    print('\'' + lexem.get_str() + '\'')
 
-    fixes = NamingFixer.analyze(lexems)
+    #fixes = NamingFixer.analyze(lexems)
 
-    for fix in fixes:
-        print(f'{fix[0]} -> {fix[1]}')
+    logger = logging.getLogger()
+    fhandler = logging.FileHandler(filename=test_log, mode='w')
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    fhandler.setFormatter(formatter)
+    logger.addHandler(fhandler)
+    logger.setLevel(logging.DEBUG)
+
+    #NamingFixer.verify_file(test_file, logger)
+    NamingFixer.fix_file(test_file, logger)
+
+    #for fix in fixes:
+    #    print(f'{fix[0]} -> {fix[1]}')
 
     '''
     test1 = 'HelloWorld'
