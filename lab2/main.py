@@ -28,8 +28,8 @@ def main():
            '    blue: 3\n' \
            '}\n'
 
-    test_file = 'D:\\Meta\\Lab2\\JsFiles\\test.js'
-    test_file = 'D:\\Meta\\Lab2\\JsFiles\\test.log'
+    test_file = 'examples\\test.js'
+    test_log = 'examples\\all.log'
 
     f = open(test_file, 'r')
     text = f.read()
@@ -52,7 +52,11 @@ def main():
     logger.setLevel(logging.DEBUG)
 
     #NamingFixer.verify_file(test_file, logger)
-    NamingFixer.fix_file(test_file, logger)
+    #NamingFixer.fix_file(test_file, logger)
+    test_dir = 'examples'
+
+    #NamingFixer.verify_directory(test_dir)
+    NamingFixer.verify_project(test_dir)
 
     #for fix in fixes:
     #    print(f'{fix[0]} -> {fix[1]}')
@@ -78,4 +82,9 @@ def main():
     print(test2.isupper())
     '''
 
+	#if self.ccf_type == CCFType.VERIFY:
+    #        logging.basicConfig(filename=self.verify_log_file_name)
+    #    else:
+    #        logging.basicConfig(filename=self.fix_log_file_name)
+	
 main()

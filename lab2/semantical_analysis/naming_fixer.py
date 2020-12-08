@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import string
 
@@ -10,7 +11,35 @@ from semantical_analysis.parser import Parser
 class NamingFixer:
 
     @classmethod
-    def verify_file(cls, filepath, logger):
+    def verify_project(cls, projpath):
+        files_to_verify = []
+        for root, dirs, files in os.walk(projpath):
+            for f in files:
+                if f.endswith(".js"):
+                    files_to_verify.append(os.path.join(root, f))
+        for f in files_to_verify:
+            cls.verify_file(f)
+
+    @classmethod
+    def verify_directory(cls, dirpath):
+        files = []
+        for f in os.listdir(dirpath):
+            if f.endswith(".js"):
+                files.append(os.path.join(dirpath, f))
+        for f in files:
+            cls.verify_file(f)
+
+    @classmethod
+    def verify_file(cls, filepath):
+        fhandler = logging.FileHandler(filename=filepath + '_verification.log', mode='w')
+        formatter = logging.Formatter('%(levelname)s: %(message)s')
+        fhandler.setFormatter(formatter)
+
+        log = logging.getLogger()  # root logger
+        for hdlr in log.handlers[:]:  # remove all old handlers
+            log.removeHandler(hdlr)
+        log.addHandler(fhandler)
+
         f = open(filepath, 'r')
         text = f.read()
         f.close()
@@ -25,7 +54,35 @@ class NamingFixer:
                     logging.warning(f'{filepath}: {fix[0]} naming error -> should be {fix[1]}')
 
     @classmethod
-    def fix_file(cls, filepath, logger):
+    def fix_project(cls, projpath):
+        files_to_fix = []
+        for root, dirs, files in os.walk(projpath):
+            for f in files:
+                if f.endswith(".js"):
+                    files_to_fix.append(os.path.join(root, f))
+        for f in files_to_fix:
+            cls.fix_file(f)
+
+    @classmethod
+    def fix_directory(cls, dirpath):
+        files_to_fix = []
+        for f in os.listdir(dirpath):
+            if f.endswith(".js"):
+                files_to_fix.append(os.path.join(dirpath, f))
+        for f in files_to_fix:
+            cls.fix_file(f)
+
+    @classmethod
+    def fix_file(cls, filepath):
+        fhandler = logging.FileHandler(filename=filepath + '_fixing.log', mode='w')
+        formatter = logging.Formatter('%(levelname)s: %(message)s')
+        fhandler.setFormatter(formatter)
+
+        log = logging.getLogger()  # root logger
+        for hdlr in log.handlers[:]:  # remove all old handlers
+            log.removeHandler(hdlr)
+        log.addHandler(fhandler)
+
         f = open(filepath, 'r')
         text = f.read()
         f.close()
