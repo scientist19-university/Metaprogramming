@@ -1,5 +1,7 @@
 import logging
+import ntpath
 import os
+import platform
 import re
 import string
 
@@ -83,6 +85,16 @@ class NamingFixer:
             log.removeHandler(hdlr)
         log.addHandler(fhandler)
 
+        filename = ntpath.basename(filepath)
+        dir_path = os.path.dirname(os.path.realpath(filepath))
+        clear_filename = filename[0:(len(filename)-3)]
+        if not cls.__is_correct_filename(clear_filename):
+            new_name = cls.__to_correct_filename(clear_filename)
+            slash = "\\" if platform.system() in ['Windows', 'windows', 'Win', 'win'] else "/"
+            filepath = dir_path + slash + new_name + ".js"
+            os.rename(dir_path + slash + filename, filepath)
+            logging.error(f'{filepath}: {filename} naming error -> fixed to {new_name+".js"}')
+
         f = open(filepath, 'r')
         text = f.read()
         f.close()
@@ -161,3 +173,28 @@ class NamingFixer:
     def __to_snake(cls, name):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).upper()
+
+    @classmethod
+    def __is_correct_filename(cls, name):
+        contains_dashes = "-" in name
+        contains_underscores = "_" in name
+        contains_uppercase = False
+        for ch in name:
+            if ch.isupper():
+                contains_uppercase = True
+                break
+        if contains_uppercase:
+            return False
+        if contains_underscores and contains_dashes:
+            return False
+        return True
+
+    @classmethod
+    def __to_correct_filename(cls, name):
+        contains_dashes = "-" in name
+        contains_underscores = "_" in name
+        if contains_underscores and contains_dashes:
+            name = cls.__to_snake(name)
+            name = name.lower()
+            name = name.replace("_", "-")
+        return name
