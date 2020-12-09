@@ -9,6 +9,7 @@ from lexical_analysis.lexema import LexemType
 from lexical_analysis.lexer import Lexer
 from semantical_analysis.parser import Parser
 
+from console_progressbar import ProgressBar
 
 class NamingFixer:
 
@@ -19,8 +20,15 @@ class NamingFixer:
             for f in files:
                 if f.endswith(".js"):
                     files_to_verify.append(os.path.join(root, f))
+        if len(files) == 0:
+            return
+        pb = ProgressBar(total=len(files_to_verify), prefix='Files processed', suffix='', decimals=1, length=50)
+        progress = 0
+        pb.print_progress_bar(0)
         for f in files_to_verify:
             cls.verify_file(f)
+            progress += 1
+            pb.print_progress_bar(progress)
 
     @classmethod
     def verify_directory(cls, dirpath):
@@ -28,8 +36,15 @@ class NamingFixer:
         for f in os.listdir(dirpath):
             if f.endswith(".js"):
                 files.append(os.path.join(dirpath, f))
+        if len(files) == 0:
+            return
+        pb = ProgressBar(total=len(files), prefix='Files processed', suffix='', decimals=1, length=50)
+        progress = 0
+        pb.print_progress_bar(0)
         for f in files:
             cls.verify_file(f)
+            progress += 1
+            pb.print_progress_bar(progress)
 
     @classmethod
     def verify_file(cls, filepath):
@@ -41,6 +56,12 @@ class NamingFixer:
         for hdlr in log.handlers[:]:  # remove all old handlers
             log.removeHandler(hdlr)
         log.addHandler(fhandler)
+
+        filename = ntpath.basename(filepath)
+        clear_filename = filename[0:(len(filename)-3)]
+        if not cls.__is_correct_filename(clear_filename):
+            new_name = cls.__to_correct_filename(clear_filename)
+            logging.warning(f'{filepath}: {filename} naming error -> should be {new_name+".js"}')
 
         f = open(filepath, 'r')
         text = f.read()
@@ -62,8 +83,15 @@ class NamingFixer:
             for f in files:
                 if f.endswith(".js"):
                     files_to_fix.append(os.path.join(root, f))
+        if len(files_to_fix) == 0:
+            return
+        pb = ProgressBar(total=len(files_to_fix), prefix='Files processed', suffix='', decimals=1, length=50)
+        progress = 0
+        pb.print_progress_bar(0)
         for f in files_to_fix:
             cls.fix_file(f)
+            progress += 1
+            pb.print_progress_bar(progress)
 
     @classmethod
     def fix_directory(cls, dirpath):
@@ -71,8 +99,15 @@ class NamingFixer:
         for f in os.listdir(dirpath):
             if f.endswith(".js"):
                 files_to_fix.append(os.path.join(dirpath, f))
+        if len(files_to_fix) == 0:
+            return
+        pb = ProgressBar(total=len(files_to_fix), prefix='Files processed', suffix='', decimals=1, length=50)
+        progress = 0
+        pb.print_progress_bar(0)
         for f in files_to_fix:
             cls.fix_file(f)
+            progress += 1
+            pb.print_progress_bar(progress)
 
     @classmethod
     def fix_file(cls, filepath):
@@ -139,6 +174,8 @@ class NamingFixer:
     @classmethod
     def __to_camel_case(cls, name):
         res = string.capwords(name.replace("_", " ")).replace(" ", "")
+        if not res:
+            return name
         return res[0].lower() + res[1:]
 
     @classmethod
@@ -191,10 +228,7 @@ class NamingFixer:
 
     @classmethod
     def __to_correct_filename(cls, name):
-        contains_dashes = "-" in name
-        contains_underscores = "_" in name
-        if contains_underscores and contains_dashes:
-            name = cls.__to_snake(name)
-            name = name.lower()
-            name = name.replace("_", "-")
-        return name
+        upper_snake_case = cls.__to_snake(name)
+        lower_snake_case = upper_snake_case.lower()
+        lower_dash = lower_snake_case.replace("_", "-")
+        return lower_dash
