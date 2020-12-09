@@ -3,10 +3,10 @@
 
 To use package install it from pipy:
 
-https://pypi.org/project/jsconventionfixer/1.0.1/
+https://pypi.org/project/jsconventionfixer/1.1.4/
 
 
-Run 'pip install jsconventionfixer==1.0.1'
+Run 'pip install jsconventionfixer==1.1.4'
 
 
 After successful installation project can be used command:
