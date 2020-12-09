@@ -80,6 +80,9 @@ class Parser:
                     return position
 
                 next_after_right_paren = cls.__get_next_lexema_position(lexems, i)
+                if not next_after_right_paren:
+                    return position
+
                 if lexems[next_after_right_paren].get_type() != LexemType.LEFT_BRACE:
                     return position
 

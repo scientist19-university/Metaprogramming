@@ -150,23 +150,34 @@ class Lexer:
         quote = str[0]
         i = 1
 
-        while str[i] != quote:
-            i += 1
-        i += 1
+        def is_closing_quote(str, i):
+            return str[i] == quote and str[i-1] != '\\'
 
+        while i < len(str) and not is_closing_quote(str, i):
+            i += 1
+
+        if i == len(str):
+            return None, str
+
+        i += 1
         return Lexema(LexemType.STRING, str[0:i]), str[i:]
 
     @classmethod
     def __lex_number(cls, str):
-        numbers = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", str)
-        if len(numbers) == 0:
+        t = re.search("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", str)
+
+        if not t:
             return None, str
 
-        first_number = numbers[0]
-        number_len = len(first_number)
+        number = t.group()
+
+        if not number:
+            return None, str
+
+        number_len = len(number)
 
         p_number = str[0:number_len]
-        if p_number == first_number:
-            return Lexema(LexemType.NUMBER, first_number), str[number_len:]
+        if p_number == number:
+            return Lexema(LexemType.NUMBER, number), str[number_len:]
         else:
             return None, str
